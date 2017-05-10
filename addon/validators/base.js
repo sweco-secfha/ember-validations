@@ -7,7 +7,8 @@ const {
   computed: { empty, not },
   get,
   on,
-  set
+  set,
+  isArray
 } = Ember;
 
 export default EmberObject.extend({
@@ -18,7 +19,11 @@ export default EmberObject.extend({
       'if': get(this, 'options.if'),
       unless: get(this, 'options.unless')
     };
-    this.model.addObserver(this.property, this, this._validate);
+    if (isArray(get(this.model, this.property))) {
+      this.model.addObserver(this.property + '.[]', this, this._validate);
+    } else {
+      this.model.addObserver(this.property, this, this._validate);
+    }
   },
 
   addObserversForDependentValidationKeys: on('init', function() {
